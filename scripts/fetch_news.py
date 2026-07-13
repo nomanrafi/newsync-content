@@ -24,7 +24,7 @@ import json
 import time
 import base64
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 from urllib.parse import quote
@@ -292,7 +292,7 @@ imageCredit: "{frontmatter.get('imageCredit', '')}"
 sourceUrl: "{frontmatter.get('sourceUrl', '')}"
 sourceName: "{frontmatter.get('sourceName', '')}"
 author: "Newsync"
-publishedAt: "{frontmatter.get('publishedAt', datetime.utcnow().isoformat() + 'Z')}"
+publishedAt: "{frontmatter.get('publishedAt', datetime.now(timezone.utc).isoformat())}"
 readingTime: {frontmatter.get('readingTime', 4)}
 seoTitle: "{seo_title_escaped}"
 seoDescription: "{seo_desc_escaped}"
@@ -336,7 +336,7 @@ def run_pipeline():
     """Run the complete news automation pipeline."""
     print("=" * 60)
     print(f"NEWSYNC - Automated News Pipeline")
-    print(f"Started at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"Started at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 60)
     
     total_processed = 0
@@ -355,7 +355,7 @@ def run_pipeline():
         image_url = article.get("image", "")
         source_name = article.get("source", {}).get("name", "")
         source_url = article.get("url", "")
-        published_at = article.get("publishedAt", datetime.utcnow().isoformat() + "Z")
+        published_at = article.get("publishedAt", datetime.now(timezone.utc).isoformat())
         
         print(f"\n--- Article {i+1}/{len(articles)} ---")
         print(f"  Original: {title[:70]}...")
@@ -372,8 +372,15 @@ def run_pipeline():
         rewritten = rewrite_with_gemini(title, content, category)
         
         if not rewritten:
-            print("  [SKIP] Gemini rewrite failed. Skipping.")
-            continue
+            print("  [WARN] Gemini rewrite failed (Quota exceeded). Using original content as fallback.")
+            rewritten = {
+                "rewrittenTitle": title,
+                "rewrittenContent": f"<p>{content}</p>",
+                "excerpt": description[:200],
+                "seoTitle": title[:60],
+                "seoDescription": description[:155],
+                "tags": [category, "news", "latest"]
+            }
         
         print(f"  New Title: {rewritten.get('rewrittenTitle', 'N/A')[:70]}...")
         
@@ -412,7 +419,7 @@ def run_pipeline():
     print(f"Pipeline Complete!")
     print(f"  Fetched: {total_fetched} articles")
     print(f"  Published: {total_processed} articles")
-    print(f"  Finished at: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    print(f"  Finished at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
     print("=" * 60)
 
 

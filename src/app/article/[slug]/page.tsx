@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getArticleBySlug, getArticles, getRelatedArticles } from "@/lib/articles";
 import { getCategoryInfo, formatDate, siteConfig } from "@/lib/config";
 import NewsCard from "@/components/NewsCard";
+import LeaderboardAd from "@/components/ads/LeaderboardAd";
+import NativeAd from "@/components/ads/NativeAd";
 import {
   Clock,
   Calendar,
@@ -76,12 +78,12 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     return (
       <div className="container-main py-20 text-center">
         <h1 className="text-4xl font-bold mb-4">Article Not Found</h1>
-        <p className="text-[var(--color-text-tertiary)] mb-8">
+        <p className="text-[var(--grey-700)] mb-8">
           The article you&apos;re looking for doesn&apos;t exist or has been removed.
         </p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--color-accent-primary)] text-white font-semibold hover:bg-indigo-600 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--black)] text-[var(--white)] font-semibold hover:bg-[var(--grey-800)] transition-colors"
         >
           <ChevronLeft size={18} />
           Back to Home
@@ -125,23 +127,23 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       <article id="article-page" className="container-main py-8">
         <div className="max-w-3xl mx-auto">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] mb-6">
+          <nav className="flex items-center gap-2 text-sm text-[var(--grey-700)] mb-6 font-[var(--font-sans)]">
             <Link
               href="/"
-              className="hover:text-[var(--color-accent-secondary)] transition-colors"
+              className="hover:text-[var(--red)] transition-colors"
             >
               Home
             </Link>
             <span>/</span>
             <Link
               href={`/category/${article.category}`}
-              className="hover:text-[var(--color-accent-secondary)] transition-colors"
+              className="hover:text-[var(--red)] transition-colors"
               style={{ color: catInfo.color }}
             >
               {catInfo.label}
             </Link>
             <span>/</span>
-            <span className="text-[var(--color-text-tertiary)] truncate">
+            <span className="text-[var(--black)] truncate font-semibold">
               {article.title}
             </span>
           </nav>
@@ -157,27 +159,29 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {catInfo.icon} {catInfo.label}
           </span>
 
+          <LeaderboardAd />
+
           {/* Title */}
           <h1 className="text-3xl md:text-4xl lg:text-4xl font-extrabold font-[var(--font-display)] leading-tight mb-6">
             {article.title}
           </h1>
 
           {/* Excerpt */}
-          <p className="text-lg text-[var(--color-text-secondary)] leading-relaxed mb-6 max-w-3xl">
+          <p className="text-xl text-[var(--grey-700)] leading-relaxed mb-6 max-w-3xl font-[var(--font-serif)]">
             {article.excerpt}
           </p>
 
           {/* Meta Bar */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--color-text-tertiary)] mb-8 pb-6 border-b border-[var(--color-border)]">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-[var(--grey-700)] mb-8 pb-6 border-b border-[var(--grey-300)] font-[var(--font-sans)]">
             <div className="flex items-center gap-1.5">
               <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">
                 {article.author.charAt(0)}
               </div>
-              <span className="font-medium text-[var(--color-text-primary)]">
+              <span className="font-bold text-[var(--black)]">
                 {article.author}
               </span>
             </div>
-            <span className="text-[var(--color-text-muted)]">·</span>
+            <span className="text-[var(--grey-300)]">·</span>
             <div className="flex items-center gap-1.5">
               <Calendar size={14} />
               <span>
@@ -188,7 +192,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 })}
               </span>
             </div>
-            <span className="text-[var(--color-text-muted)]">·</span>
+            <span className="text-[var(--grey-300)]">·</span>
             <div className="flex items-center gap-1.5">
               <Clock size={14} />
               <span>{article.readingTime} min read</span>
@@ -197,13 +201,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             {/* Action Buttons */}
             <div className="ml-auto flex items-center gap-2">
               <button
-                className="w-9 h-9 rounded-lg border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text-tertiary)] hover:text-white hover:border-[var(--color-border-hover)] transition-all"
+                className="w-9 h-9 rounded-lg border border-[var(--grey-300)] flex items-center justify-center text-[var(--grey-700)] hover:text-[var(--black)] hover:border-[var(--grey-500)] transition-all"
                 aria-label="Share article"
               >
                 <Share2 size={15} />
               </button>
               <button
-                className="w-9 h-9 rounded-lg border border-[var(--color-border)] flex items-center justify-center text-[var(--color-text-tertiary)] hover:text-white hover:border-[var(--color-border-hover)] transition-all"
+                className="w-9 h-9 rounded-lg border border-[var(--grey-300)] flex items-center justify-center text-[var(--grey-700)] hover:text-[var(--black)] hover:border-[var(--grey-500)] transition-all"
                 aria-label="Bookmark article"
               >
                 <Bookmark size={15} />
@@ -214,7 +218,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           {/* Featured Image */}
           {article.imageUrl && (
             <figure className="mb-8">
-              <div className="rounded-2xl overflow-hidden">
+              <div className="overflow-hidden bg-[var(--grey-200)]">
                 <img
                   src={article.imageUrl}
                   alt={article.title}
@@ -222,13 +226,13 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 />
               </div>
               {article.imageCredit && (
-                <figcaption className="mt-3 text-xs text-[var(--color-text-muted)] text-center">
+                <figcaption className="mt-3 text-xs text-[var(--grey-700)] text-center font-[var(--font-sans)]">
                   📷 Image Source:{" "}
                   <a
                     href={article.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[var(--color-accent-secondary)] hover:underline"
+                    className="text-[var(--black)] hover:underline font-bold"
                   >
                     {article.imageCredit}
                   </a>
@@ -239,21 +243,26 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Article Content */}
           <div
-            className="article-content"
+            className="article-content font-[var(--font-serif)]"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
 
+          {/* Native Ad inside article content */}
+          <div className="mt-8">
+            <NativeAd />
+          </div>
+
           {/* Tags */}
           {article.tags.length > 0 && (
-            <div className="mt-10 pt-6 border-t border-[var(--color-border)]">
+            <div className="mt-10 pt-6 border-t border-[var(--grey-300)] font-[var(--font-sans)]">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-semibold text-[var(--color-text-secondary)]">
+                <span className="text-sm font-bold text-[var(--black)] uppercase tracking-wide">
                   Tags:
                 </span>
                 {article.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs px-3 py-1 rounded-full bg-[var(--color-bg-tertiary)] text-[var(--color-text-tertiary)] border border-[var(--color-border)]"
+                    className="text-xs px-3 py-1 bg-[var(--grey-100)] text-[var(--grey-800)] border border-[var(--grey-300)]"
                   >
                     #{tag}
                   </span>
@@ -264,20 +273,20 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
           {/* Source Link */}
           {article.sourceUrl && article.sourceUrl !== "#" && (
-            <div className="mt-6 p-4 rounded-xl bg-[var(--color-bg-card)] border border-[var(--color-border)]">
+            <div className="mt-6 p-4 bg-[var(--grey-100)] border border-[var(--grey-300)] font-[var(--font-sans)]">
               <div className="flex items-center gap-2 text-sm">
                 <ExternalLink
                   size={14}
-                  className="text-[var(--color-text-muted)]"
+                  className="text-[var(--grey-700)]"
                 />
-                <span className="text-[var(--color-text-tertiary)]">
+                <span className="text-[var(--grey-800)]">
                   Original Source:
                 </span>
                 <a
                   href={article.sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--color-accent-secondary)] hover:underline font-medium"
+                  className="text-[var(--blue)] hover:underline font-bold"
                 >
                   {article.sourceName || "View Original"}
                 </a>
@@ -289,7 +298,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Related Articles */}
       {relatedArticles.length > 0 && (
-        <section className="container-main py-8 border-t border-[var(--color-border)]">
+        <section className="container-main py-8 border-t border-[var(--black)] mt-12">
           <div className="section-header">
             <div className="section-title">
               <span className="section-title-accent" />

@@ -695,6 +695,8 @@ img {
   font-size: 17px;
   line-height: 1.6;
   color: #1a1a1a;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .article-content p {

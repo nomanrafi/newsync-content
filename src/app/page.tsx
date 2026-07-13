@@ -4,6 +4,8 @@ import { categoryList } from "@/lib/config";
 import BreakingNewsTicker from "@/components/BreakingNewsTicker";
 import HeroSection from "@/components/HeroSection";
 import CategorySection from "@/components/CategorySection";
+import LeaderboardAd from "@/components/ads/LeaderboardAd";
+import NativeAd from "@/components/ads/NativeAd";
 import Link from "next/link";
 
 // Demo articles for initial setup (before GitHub content repo is populated)
@@ -338,6 +340,11 @@ export default async function HomePage() {
       {/* Breaking News Ticker */}
       <BreakingNewsTicker items={breakingNews} />
 
+      {/* Top Leaderboard Ad */}
+      <div className="container mt-2">
+        <LeaderboardAd />
+      </div>
+
       {/* Hero Section - BBC 3-column layout */}
       {featured && (
         <HeroSection
@@ -359,12 +366,20 @@ export default async function HomePage() {
         else if (index % 3 === 2) layoutType = "grid-3";
 
         return (
-          <CategorySection
-            key={cat.id}
-            category={cat.id as Category}
-            articles={catArticles}
-            layoutType={layoutType}
-          />
+          <div key={cat.id}>
+            <CategorySection
+              category={cat.id as Category}
+              articles={catArticles}
+              layoutType={layoutType}
+            />
+            {/* Insert Native Ad after the first category */}
+            {index === 0 && (
+              <div className="container border-b border-[var(--grey-200)] pb-6 mb-6">
+                <span className="text-xs font-bold text-[var(--grey-500)] uppercase tracking-widest mb-2 block">Sponsored Content</span>
+                <NativeAd />
+              </div>
+            )}
+          </div>
         );
       })}
     </>

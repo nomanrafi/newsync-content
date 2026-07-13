@@ -1,5 +1,5 @@
 import { getArticles, getBreakingNews } from "@/lib/articles";
-import { Category } from "@/types";
+import { Category, Article } from "@/types";
 import { categoryList } from "@/lib/config";
 import BreakingNewsTicker from "@/components/BreakingNewsTicker";
 import HeroSection from "@/components/HeroSection";

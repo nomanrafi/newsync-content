@@ -123,7 +123,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
       />
 
       <article id="article-page" className="container-main py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] mb-6">
             <Link
@@ -158,7 +158,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </span>
 
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold font-[var(--font-display)] leading-tight mb-6">
+          <h1 className="text-3xl md:text-4xl lg:text-4xl font-extrabold font-[var(--font-display)] leading-tight mb-6">
             {article.title}
           </h1>
 

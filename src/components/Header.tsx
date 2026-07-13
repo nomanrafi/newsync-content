@@ -63,9 +63,15 @@ export default function BBCHeader() {
             >
               <Search size={18} />
             </button>
-            <button id="signin-btn" className="bbc-btn-signin">
-              Sign In
-            </button>
+            <a 
+              id="subscribe-btn" 
+              className="bbc-btn-signin" 
+              href="https://www.effectivecpmnetwork.com/nhg3fbgdk?key=4d5ed8b90e6248dd2e4468fc295139b9"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Subscribe
+            </a>
           </div>
         </div>
       </div>

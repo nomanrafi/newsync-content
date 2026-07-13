@@ -30,8 +30,19 @@ from urllib.error import URLError, HTTPError
 from urllib.parse import quote
 
 # ===========================================
-# Configuration
+# Configuration (Load from .env.local)
 # ===========================================
+import os
+
+env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env.local")
+if os.path.exists(env_path):
+    with open(env_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, val = line.split("=", 1)
+                os.environ[key.strip()] = val.strip()
+
 GNEWS_API_KEY = os.environ.get("GNEWS_API_KEY", "")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")

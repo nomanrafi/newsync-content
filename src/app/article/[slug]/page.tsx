@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getArticleBySlug, getArticles, getRelatedArticles } from "@/lib/articles";
 import { getCategoryInfo, formatDate, siteConfig } from "@/lib/config";
 import NewsCard from "@/components/NewsCard";
+import ViewTracker from "@/components/ViewTracker";
 import LeaderboardAd from "@/components/ads/LeaderboardAd";
 import NativeAd from "@/components/ads/NativeAd";
 import {
@@ -124,8 +125,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         }}
       />
 
+      <ViewTracker slug={article.slug} category={article.category} />
+
       <article id="article-page" className="container py-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-[var(--grey-200)] p-6 md:p-10 lg:p-14">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-[var(--grey-700)] mb-6 font-[var(--font-sans)]">
             <Link

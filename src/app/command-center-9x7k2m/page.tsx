@@ -29,74 +29,26 @@ import {
   Lock,
 } from "lucide-react";
 
-// Mock analytics data (will be replaced by Supabase queries when connected)
-function getMockStats() {
-  const days = Array.from({ length: 30 }, (_, i) => {
-    const date = new Date();
-    date.setDate(date.getDate() - (29 - i));
-    return {
-      date: date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-      views: Math.floor(Math.random() * 500) + 100,
-    };
-  });
+import { supabase } from "@/lib/supabase";
+// 1. Create a Supabase project at supabase.com
+// 2. Create a table named 'page_views' with columns: id, slug, category, created_at
+// 3. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local
+// 4. Install @supabase/supabase-js: npm i @supabase/supabase-js
 
-  const categoryViews = [
-    { name: "Technology", views: 2840, color: "#6366f1" },
-    { name: "World", views: 2120, color: "#06b6d4" },
-    { name: "Business", views: 1890, color: "#f59e0b" },
-    { name: "Sports", views: 1650, color: "#22c55e" },
-    { name: "Entertainment", views: 1420, color: "#ec4899" },
-    { name: "Health", views: 980, color: "#14b8a6" },
-    { name: "Science", views: 870, color: "#8b5cf6" },
-  ];
-
-  const topArticles = [
-    {
-      title: "OpenAI Unveils GPT-6 With Unprecedented Reasoning Capabilities",
-      views: 4520,
-      category: "Technology",
-    },
-    {
-      title: "G20 Leaders Reach Historic Agreement on Global Climate Fund",
-      views: 3890,
-      category: "World",
-    },
-    {
-      title: "NASA's James Webb Telescope Discovers Signs of Life",
-      views: 3240,
-      category: "Science",
-    },
-    {
-      title: "FIFA World Cup 2026: Host Cities Reveal Stadium Upgrades",
-      views: 2870,
-      category: "Sports",
-    },
-    {
-      title: "Breakthrough mRNA Vaccine Shows Promise Against All Cancer Types",
-      views: 2650,
-      category: "Health",
-    },
-  ];
-
-  return {
-    totalViews: 45230,
-    todayViews: 1847,
-    totalArticles: 156,
-    activeUsers: 342,
-    days,
-    categoryViews,
-    topArticles,
-  };
-}
 
 export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [stats, setStats] = useState(getMockStats());
+  const [stats, setStats] = useState({
+    totalViews: 0,
+    todayViews: 0,
+    totalArticles: 0,
+    activeUsers: 0,
+    days: [],
+    categoryViews: [],
+    topArticles: [],
+  });
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Simple password auth (in production, use Supabase Auth)
@@ -114,18 +66,84 @@ export default function AdminDashboard() {
     }
   };
 
-  useEffect(() => {
-    const stored = sessionStorage.getItem("newsync-admin");
-    if (stored === "true") {
-      setIsAuthenticated(true);
+  const fetchStats = async () => {
+    try {
+      // 1. Get all views
+      const { data: views, error } = await supabase.from("page_views").select("*");
+      if (error) throw error;
+      
+      const allViews = views || [];
+      const totalViews = allViews.length;
+      
+      // 2. Today's views
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayViews = allViews.filter(v => new Date(v.created_at) >= today).length;
+      
+      // 3. Total Unique Articles
+      const uniqueSlugs = new Set(allViews.map(v => v.slug));
+      const totalArticles = uniqueSlugs.size;
+      
+      // 4. Days (Last 30 days)
+      const daysMap = new Map();
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        daysMap.set(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), 0);
+      }
+      
+      allViews.forEach(v => {
+        const d = new Date(v.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        if (daysMap.has(d)) {
+          daysMap.set(d, daysMap.get(d) + 1);
+        }
+      });
+      const days = Array.from(daysMap, ([date, v]) => ({ date, views: v }));
+      
+      // 5. Category Distribution
+      const catCount: Record<string, number> = {};
+      allViews.forEach(v => {
+        catCount[v.category] = (catCount[v.category] || 0) + 1;
+      });
+      const colors = ["#6366f1", "#06b6d4", "#f59e0b", "#22c55e", "#ec4899", "#14b8a6", "#8b5cf6"];
+      const categoryViews = Object.entries(catCount)
+        .map(([name, v], idx) => ({ name, views: v, color: colors[idx % colors.length] }))
+        .sort((a, b) => b.views - a.views);
+        
+      // 6. Top Articles
+      const slugCount: Record<string, { views: number, category: string }> = {};
+      allViews.forEach(v => {
+        if (!slugCount[v.slug]) slugCount[v.slug] = { views: 0, category: v.category };
+        slugCount[v.slug].views += 1;
+      });
+      const topArticles = Object.entries(slugCount)
+        .map(([slug, data]) => ({ title: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '), views: data.views, category: data.category }))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 5);
+        
+      setStats({
+        totalViews,
+        todayViews,
+        totalArticles,
+        activeUsers: Math.floor(todayViews / 24) || 1, // Rough estimate of active hourly users
+        days,
+        categoryViews,
+        topArticles,
+      });
+    } catch (err) {
+      console.error("Failed to fetch analytics:", err);
     }
-  }, []);
+  };
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchStats();
+    }
+  }, [isAuthenticated]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate data refresh
-    await new Promise((r) => setTimeout(r, 1000));
-    setStats(getMockStats());
+    await fetchStats();
     setIsRefreshing(false);
   };
 
@@ -203,10 +221,10 @@ export default function AdminDashboard() {
         <div>
           <h1 className="text-2xl font-bold font-[var(--font-display)] flex items-center gap-2">
             <Activity size={24} className="text-[var(--color-accent-primary)]" />
-            Command Center
+            Command Center (Live Data)
           </h1>
           <p className="text-sm text-[var(--color-text-muted)] mt-1">
-            Newsync Analytics & Control Panel
+            Real-time Analytics via Supabase Database
           </p>
         </div>
         <div className="flex items-center gap-3">

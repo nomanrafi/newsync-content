@@ -124,7 +124,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
         }}
       />
 
-      <article id="article-page" className="container-main py-8">
+      <article id="article-page" className="container py-8">
         <div className="max-w-3xl mx-auto">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-[var(--grey-700)] mb-6 font-[var(--font-sans)]">
@@ -298,7 +298,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
       {/* Related Articles */}
       {relatedArticles.length > 0 && (
-        <section className="container-main py-8 border-t border-[var(--black)] mt-12">
+        <section className="container py-8 border-t border-[var(--black)] mt-12">
           <div className="section-header">
             <div className="section-title">
               <span className="section-title-accent" />

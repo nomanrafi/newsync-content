@@ -270,19 +270,10 @@ function getDemoArticles() {
     ],
   };
 
-  const allArticles: {
-    slug: string;
-    title: string;
-    excerpt: string;
-    category: Category;
-    imageUrl: string;
-    publishedAt: string;
-    readingTime: number;
-    sourceName: string;
+  const allArticles: (Article & {
     isFeatured: boolean;
     isBreaking: boolean;
-    relatedSlugs: string[];
-  }[] = [];
+  })[] = [];
 
   let offset = 0;
   for (const cat of categories) {

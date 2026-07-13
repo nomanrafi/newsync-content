@@ -40,7 +40,17 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [stats, setStats] = useState({
+  interface StatState {
+    totalViews: number;
+    todayViews: number;
+    totalArticles: number;
+    activeUsers: number;
+    days: { date: string; views: number }[];
+    categoryViews: { name: string; views: number; color: string }[];
+    topArticles: { title: string; views: number; category: string }[];
+  }
+
+  const [stats, setStats] = useState<StatState>({
     totalViews: 0,
     todayViews: 0,
     totalArticles: 0,
